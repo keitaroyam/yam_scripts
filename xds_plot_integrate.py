@@ -24,7 +24,7 @@ class IntegrateLp:
     # __init__()
 
     def parse(self, int_lp):
-        re_im = re.compile("^ (.....)   0 (......) (........) (....) (......) (.......) (.....) (.......) (.......)")
+        re_im = re.compile("^ (.....)   0 +([0-9\.]+) +([0-9]+) +([0-9]+) +([0-9]+) +([0-9]+) +([0-9]+) +([0-9\.]+) +([0-9\.]+)")
         re_cell = re.compile("^ UNIT CELL PARAMETERS *([0-9\.]+) *([0-9\.]+) *([0-9\.]+) *([0-9\.]+) *([0-9\.]+) *([0-9\.]+)")
         re_rotation = re.compile("^ CRYSTAL ROTATION OFF FROM INITIAL ORIENTATION *([-0-9\.]+) *([-0-9\.]+) *([-0-9\.]+)") #
         re_mosaicity = re.compile("^ CRYSTAL MOSAICITY \(DEGREES\) *([0-9\.]+)") #
