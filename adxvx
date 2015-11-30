@@ -1,0 +1,28 @@
+#!/bin/bash
+"""
+adxvx
+
+(c) RIKEN 2015. All rights reserved. 
+Author: Keitaro Yamashita
+
+This software is released under the new BSD License; see LICENSE.
+"""
+
+# Adxv shortcut for visualizing XDS result
+# assuming XDS.INP exists in the same directory as the input file.
+
+infile=${@: -1}
+dir=`dirname $infile`
+xdsinp=`mktemp 2>/dev/null || mktemp -t mytmp`
+sed -e 's/!.*//g' ${dir}/XDS.INP > $xdsinp
+
+wavelength=`egrep -o "X-RAY_WAVELENGTH= *[0-9\.]+" $xdsinp | sed -e "s/X-RAY_WAVELENGTH= *//"`
+distance=`egrep -o "DETECTOR_DISTANCE= *[0-9\.\-]+" $xdsinp | sed -e 's/DETECTOR_DISTANCE= *//; s/-//'`
+pixelsize=`egrep -o "QX= *[0-9\.]+" $xdsinp | sed -e "s/QX= *//"`
+orgx=`egrep -o "ORGX= *[0-9\.]+" $xdsinp | sed -e "s/ORGX= *//"`
+orgy=`egrep -o "ORGY= *[0-9\.]+" $xdsinp | sed -e "s/ORGY= *//"`
+rm -f $xdsinp
+
+echo adxv -wavelength ${wavelength} -distance ${distance} -pixelsize ${pixelsize} -beam_center_pixels $orgx $orgy $@
+adxv -wavelength ${wavelength} -distance ${distance} -pixelsize ${pixelsize} -beam_center_pixels $orgx $orgy $@
+

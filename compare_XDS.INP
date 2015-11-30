@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+"""
+compare_XDS.INP
+
+(c) RIKEN 2015. All rights reserved. 
+Author: Keitaro Yamashita
+
+This software is released under the new BSD License; see LICENSE.
+"""
+
+import sys, os, optparse, shutil, re, subprocess, random, glob, string
+
+def get_xdsinp_keyword(xdsinp):
+    ##
+    # Return the list of tuple (keyword, value) in XDS.INP
+    #
+
+    re_kwd = re.compile("([^ =]+=) *((?:(?! [^ =]+=).)*)")
+    res = []
+    for l in open(xdsinp):
+        l = l[:l.find("!")] # Remove comment
+        r = re_kwd.findall(l)
+        r = map(lambda y:map(lambda x:x.strip(), list(y)), r)
+        res.extend(r)
+
+    dic = {}
+    for key, val in res:
+        dic.setdefault(key, []).append(val)
+
+    return dic
+# get_xdsinp_keyword()
+
+def test_eq(val1, val2):
+    if val1 == val2:
+        return True
+    try:
+        if float(val1) == float(val2):
+            return True
+    except:
+        pass
+
+    if len(val1) == len(val2):
+        result = []
+        for v1, v2 in zip(val1, val2):
+            result.append(False)
+            sp1, sp2 = v1.split(), v2.split()
+            if sp1 == sp2:
+                result[-1] = True
+
+            try:
+                if map(float, sp1) == map(float, sp2):
+                    result[-1] = True
+            except:
+                pass
+        if result.count(False) == 0:
+            return True
+    return False
+# test_eq()
+
+if __name__ == "__main__":
+
+    parser = optparse.OptionParser(usage="usage: %prog [options] XDS.INP_1 XDS.INP_2")
+    opts, args = parser.parse_args(sys.argv)
+
+    if len(args) < 3:
+        parser.print_help()
+        quit()
+
+    inp1, inp2 = get_xdsinp_keyword(args[1]), get_xdsinp_keyword(args[2])
+
+    #for key, v in get_xdsinp_keyword(inp1).items():
+    #    print key, v
+
+
+    print "# Only in", args[1]
+    diff1 = set(inp1.keys()).difference(set(inp2.keys()))
+    for key in sorted(diff1):
+        print "", key, inp1[key]
+    print
+    print "# Only in", args[2]
+    diff2 = set(inp2.keys()).difference(set(inp1.keys()))
+    for key in sorted(diff2):
+        print "", key, inp2[key]
+
+    print
+    print "# Common but differ"
+    for key in sorted(inp1):
+        if key in inp2 and not test_eq(inp1[key], inp2[key]):
+            print "", key, inp1[key], "! in", args[1]
+            print "", " "*len(key), inp2[key], "! in", args[2]
+
+    print
+    print "# Completely same"
+    for key in sorted(inp1):
+        if key in inp2 and test_eq(inp1[key], inp2[key]):
+            print "", key, inp1[key]
+    
