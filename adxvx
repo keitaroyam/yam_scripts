@@ -1,12 +1,12 @@
 #!/bin/bash
-"""
-adxvx
-
-(c) RIKEN 2015. All rights reserved. 
-Author: Keitaro Yamashita
-
-This software is released under the new BSD License; see LICENSE.
-"""
+#
+# adxvx
+#
+# (c) RIKEN 2015. All rights reserved. 
+# Author: Keitaro Yamashita
+# 
+# This software is released under the new BSD License; see LICENSE.
+#
 
 # Adxv shortcut for visualizing XDS result
 # assuming XDS.INP exists in the same directory as the input file.
