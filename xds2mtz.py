@@ -1,4 +1,5 @@
 #!/usr/bin/env cctbx.python
+from __future__ import print_function
 """
 xds2mtz.py
 
@@ -20,7 +21,6 @@ When FRIDEL'S_LAW= TRUE,
 With -x option, phenix.xtriage is executed automatically.
 With -t option, ctruncate is used for converting I to F.
 """
-from __future__ import print_function
 
 import sys, os, optparse, subprocess, re
 import mtzutil

@@ -1,4 +1,5 @@
 #!/usr/bin/env cctbx.python
+from __future__ import print_function
 """
 xds_plot_integrate.py
 
@@ -10,7 +11,6 @@ This software is released under the new BSD License; see LICENSE.
 """
 TODO: plot differences in direct beam and rotation axis
 """
-from __future__ import print_function
 
 import sys
 import re
