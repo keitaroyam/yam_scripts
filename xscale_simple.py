@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xscale_simple.py
 
@@ -7,6 +7,7 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 master_params_str = """\
 cell = average *first
@@ -58,14 +59,14 @@ def get_xac_info(xac):
 def make_shells(d_max, d_min, nbins):
     step = ( 1./(d_min**2) - 1./(d_max**2) ) / float(nbins)
     start = 1./(d_max**2)
-    rshells = " ".join(map(lambda i: "%.2f" % (start + i * step)**(-1./2), xrange(1, nbins+1)))
+    rshells = " ".join(["%.2f" % (start + i * step)**(-1./2) for i in range(1, nbins+1)])
 
     return " RESOLUTION_SHELLS= %s\n" % rshells
 # make_shells()
 
 def run(params, xac_files):
     if len(xac_files) == 0:
-        print "No XDS_ASCII.HKL files provided."
+        print("No XDS_ASCII.HKL files provided.")
         return
 
     xscale_inp_head = "!MINIMUM_I/SIGMA= 3\n\n"
@@ -77,23 +78,23 @@ def run(params, xac_files):
         info = get_xac_info(xds_ascii)
         infos[xds_ascii] = info
 
-        resrng = map(float, info["resol_range"].split())
+        resrng = list(map(float, info["resol_range"].split()))
         d_max = max(d_max, resrng[0])
         d_min = min(d_min, resrng[1])
-        cells.append(map(float, info["cell"].split()))
+        cells.append(list(map(float, info["cell"].split())))
 
     if params.d_min is not None:
         d_min = max(params.d_min, d_min)
 
     if params.cell == "average":
-        cell_sum = reduce(lambda x,y: map(lambda a: a[0]+a[1], zip(x,y)), cells)
-        cell_mean = map(lambda x: x/float(len(cells)), cell_sum)
+        cell_sum = reduce(lambda x,y: [a[0]+a[1] for a in zip(x,y)], cells)
+        cell_mean = [x/float(len(cells)) for x in cell_sum]
 
         if params.sgnum is not None: sgnum = str(params.sgnum)
         else: sgnum = infos[xac_files[0]]["spgr_num"]
 
         xscale_inp_head += " SPACE_GROUP_NUMBER= %s\n" % sgnum
-        xscale_inp_head += " UNIT_CELL_CONSTANTS= %s\n" % " ".join(map(lambda x: "%.3f"%x, cell_mean))
+        xscale_inp_head += " UNIT_CELL_CONSTANTS= %s\n" % " ".join(["%.3f"%x for x in cell_mean])
 
     #if anomalous_flag is not None:
     #    xscale_inp_head += " FRIEDEL'S_LAW= %s\n" % ("FALSE" if anomalous_flag else "TRUE")
@@ -117,11 +118,11 @@ if __name__ == "__main__":
     cmdline = iotbx.phil.process_command_line(args=sys.argv[1:],
                                               master_string=master_params_str)
     params = cmdline.work.extract()
-    xac_files = filter(check_valid_xac, cmdline.remaining_args)
+    xac_files = list(filter(check_valid_xac, cmdline.remaining_args))
 
-    print "XDS_ASCII.HKL files given:"
+    print("XDS_ASCII.HKL files given:")
     for f in xac_files:
-        print " %s" % f
-    print
+        print(" %s" % f)
+    print()
 
     run(params, xac_files)

@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xds_merge_framecbf.py
 
@@ -7,6 +7,7 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 import pycbf
 import os
@@ -15,7 +16,7 @@ import numpy
 def load_minicbf_as_numpy(filein, quiet=True): # This can also read XDS special cbf
     assert os.path.isfile(filein)
     if not quiet:
-        print "reading", filein, "as minicbf"
+        print("reading", filein, "as minicbf")
     h = pycbf.cbf_handle_struct()
     h.read_file(filein, pycbf.MSG_DIGEST)
     h.require_category("array_data")
@@ -62,7 +63,7 @@ def run(files, cbfout):
     merged = None
     for i, f in enumerate(files):
         repl = -10 * (i+1)
-        print "%s %d" % (f, repl)
+        print("%s %d" % (f, repl))
 
         data, ndimfast, ndimmid = load_minicbf_as_numpy(f)
         if i == 0:
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 3:
-        print "Usage: %s FRAME.1.cbf FRAME.2.cbf .." % sys.argv[0]
+        print("Usage: %s FRAME.1.cbf FRAME.2.cbf .." % sys.argv[0])
         quit()
 
     run(sys.argv[1:], "FRAME_merged.cbf")

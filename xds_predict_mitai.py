@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xds_predict_mitai.py
 
@@ -7,6 +7,7 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 import sys, os, optparse, shutil, re, subprocess, random, glob, string, numpy
 from make_adx import make_adxfile
@@ -38,9 +39,9 @@ def check_needed_files(needed_files, wdir):
     not_exists = [ f for f in needed_files if not os.path.isfile(os.path.join(wdir, f)) ]
 
     if not_exists != []:
-        print "We need these files!"
-        print "  " + ",".join(not_exists)
-        print
+        print("We need these files!")
+        print("  " + ",".join(not_exists))
+        print()
 
     return len(not_exists) == 0
 # check_needed_files()
@@ -121,7 +122,7 @@ if __name__ == "__main__":
 
     run(param_source, opts.frame, opts.wdir)
 
-    print 
-    print 
-    print "Launch:"
-    print "adxv FRAME_%.4d.cbf INTEGRATE_%.4d.adx" % (opts.frame, opts.frame)
+    print() 
+    print() 
+    print("Launch:")
+    print("adxv FRAME_%.4d.cbf INTEGRATE_%.4d.adx" % (opts.frame, opts.frame))

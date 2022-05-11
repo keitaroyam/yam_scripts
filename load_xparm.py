@@ -6,6 +6,7 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 import os, shutil, tempfile, subprocess
 import numpy
@@ -228,8 +229,8 @@ def load_ewald(o, beam, l, scale, name="Ewald"):
 
     pos = o - beam/numpy.linalg.norm(beam)/l * scale
 
-    print "lambda=", l
-    print "pos=", pos
+    print("lambda=", l)
+    print("pos=", pos)
 
     cmd.pseudoatom(object=name,
                    pos=list(pos),
@@ -279,9 +280,9 @@ AUTHORS
 
     # Rotate space by phi axis
     for i, d in enumerate([param.starting_angle + (i+0.5+offset) * param.osc_range
-                           for i in xrange(end)]
+                           for i in range(end)]
                           ):
-        print i, d
+        print(i, d)
         R = rot_matrix(param.rotation_axis, numpy.radians(d))
 
         A = numpy.array(numpy.dot(R, param.a_axis))[0]

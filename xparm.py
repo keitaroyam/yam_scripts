@@ -83,9 +83,9 @@ class XPARM:
         self.Z_axis = numpy.array((float(Zx), float(Zy), float(Zz)))
         self.spacegroup = int(spacegroup)
         self.unit_cell = numpy.array((float(a), float(b), float(c), float(alpha), float(beta), float(gamma)))
-        self.a_axis = numpy.array(map(safe_float, (ax, ay, az)))
-        self.b_axis = numpy.array(map(safe_float, (bx, by, bz)))
-        self.c_axis = numpy.array(map(safe_float, (cx, cy, cz)))
+        self.a_axis = numpy.array(list(map(safe_float, (ax, ay, az))))
+        self.b_axis = numpy.array(list(map(safe_float, (bx, by, bz))))
+        self.c_axis = numpy.array(list(map(safe_float, (cx, cy, cz))))
     # parse_xparm_file()
 
     def set_info_from_xdsinp(self, xdsinp):
@@ -94,19 +94,19 @@ class XPARM:
         table = [("STARTING_FRAME", "starting_frame", lambda x: int(x)),
                  ("STARTING_ANGLE", "starting_angle", lambda x: float(x)),
                  ("OSCILLATION_RANGE", "osc_range", lambda x: float(x)),
-                 ("ROTATION_AXIS", "rotation_axis", lambda x: numpy.array(map(lambda y:float(y), x.split()))),
+                 ("ROTATION_AXIS", "rotation_axis", lambda x: numpy.array([float(y) for y in x.split()])),
                  ("X-RAY_WAVELENGTH", "wavelength", lambda x: float(x)),
-                 ("INCIDENT_BEAM_DIRECTION", "incident_beam", lambda x: numpy.array(map(lambda y:float(y), x.split()))),
+                 ("INCIDENT_BEAM_DIRECTION", "incident_beam", lambda x: numpy.array([float(y) for y in x.split()])),
                  ("NX", "nx", lambda x: int(x)),
                  ("NY", "ny", lambda x: int(x)),
                  ("QX", "qx", lambda x: float(x)),
                  ("QY", "qy", lambda x: float(x)),
                  ("DETECTOR_DISTANCE", "distance", lambda x: float(x)),
                  ("SPACE_GROUP_NUMBER", "spacegroup", lambda x: int(x)),
-                 ("UNIT_CELL_CONSTANTS", "unit_cell", lambda x: numpy.array(map(lambda y:float(y), x.split()))),
-                 ("UNIT_CELL_A-AXIS", "a_axis", lambda x: numpy.array(map(lambda y:float(y), x.split()))),
-                 ("UNIT_CELL_B-AXIS", "b_axis", lambda x: numpy.array(map(lambda y:float(y), x.split()))),
-                 ("UNIT_CELL_C-AXIS", "c_axis", lambda x: numpy.array(map(lambda y:float(y), x.split())))
+                 ("UNIT_CELL_CONSTANTS", "unit_cell", lambda x: numpy.array([float(y) for y in x.split()])),
+                 ("UNIT_CELL_A-AXIS", "a_axis", lambda x: numpy.array([float(y) for y in x.split()])),
+                 ("UNIT_CELL_B-AXIS", "b_axis", lambda x: numpy.array([float(y) for y in x.split()])),
+                 ("UNIT_CELL_C-AXIS", "c_axis", lambda x: numpy.array([float(y) for y in x.split()]))
                  ]
         inp = dict(get_xdsinp_keyword(xdsinp)) # I believe dict() removes duplicated parameters and keeps last.
 
@@ -180,7 +180,7 @@ def get_xparm_from_integrate_lp(lpfile, frame):
         if "PROCESSING OF IMAGES" in l:
             flag_read = False
             l = l.strip()
-            first, last = map(lambda x:int(x.strip()), l[l.index("PROCESSING OF IMAGES")+len("PROCESSING OF IMAGES"):].split("..."))
+            first, last = [int(x.strip()) for x in l[l.index("PROCESSING OF IMAGES")+len("PROCESSING OF IMAGES"):].split("...")]
             if first <= frame <= last:
                 flag_read = True
 
@@ -188,7 +188,7 @@ def get_xparm_from_integrate_lp(lpfile, frame):
             for key, s in keys.items():
                 if s in l:
                     l = l.strip()
-                    val = map(lambda x:float(x.strip()), l[l.index(s)+len(s):].split())
+                    val = [float(x.strip()) for x in l[l.index(s)+len(s):].split()]
                     data[key] = val
 
     beam = data["beam direction"]

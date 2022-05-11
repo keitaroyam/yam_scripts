@@ -6,12 +6,14 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 import sys
 import os
 import struct
 import math
 import subprocess
+from functools import reduce
 
 ##
 # MTZ COLUMN TYPES
@@ -75,13 +77,13 @@ class MtzFile:
         int_size = struct.calcsize("i")
 
         if not os.path.isfile(self._filename):
-            raise Error, "The file does not exist: %s" % self._filename
+            raise Error("The file does not exist: %s" % self._filename)
 
         try:
             mtz = open(self._filename, 'rb')
             
             if mtz.read(4) != "MTZ ":
-                raise Error, "This file is not MTZ format: " + self._filename
+                raise Error("This file is not MTZ format: " + self._filename)
 
             mtz.seek(8, 0)
             to_swap = doSwap(struct.unpack('4B', mtz.read(4)))
@@ -161,7 +163,7 @@ class MtzFile:
         for line in self.mtzheader:
             item = line.split()
             if item[0] == "COLUMN" and item[1] == col:
-                minmax = map(lambda x:float(x), item[3:5])
+                minmax = [float(x) for x in item[3:5]]
                 return min(minmax), max(minmax)
 
         return None, None
@@ -185,12 +187,12 @@ class MtzFile:
                 sgname = line[line.find("'")+1:line.rfind("'")].replace("'","").strip()
                 return [ int(sgno), sgname ]
 
-        raise Error, "No spacegroup info."
+        raise Error("No spacegroup info.")
 
     # get_spacegroup()
 
     def get_z(self):
-        syminf1 = filter(lambda l: l.startswith("SYMINF"), self.mtzheader)[0]
+        syminf1 = [l for l in self.mtzheader if l.startswith("SYMINF")][0]
         return int(syminf1.split()[1])
 
     # get_z()
@@ -199,14 +201,14 @@ class MtzFile:
 
         for line in self.mtzheader:
             if line.startswith("RESO"):
-                return map(lambda x: math.sqrt(1./float(x)), line.split()[1:])
+                return [math.sqrt(1./float(x)) for x in line.split()[1:]]
 
-        raise Error, "No resolution info."
+        raise Error("No resolution info.")
             
     # get_resolution()
 
     def get_cell(self):
-        return map(lambda x: float(x), self.get_cell_str().split())
+        return [float(x) for x in self.get_cell_str().split()]
     # get_cell()
 
     def get_dcell(self, lab):
@@ -215,7 +217,7 @@ class MtzFile:
         #
         ndif = self.get_ndif(lab)
         dcell = self.datasets[ndif]["DCELL"]
-        return map(lambda x: float(x), dcell.split())
+        return [float(x) for x in dcell.split()]
     # get_dcell()
 
     def get_cell_str(self):
@@ -251,15 +253,15 @@ def mtzdmp(filename):
 if __name__ == "__main__":
 	mtzin = sys.argv[1]
         u = MtzFile(mtzin)
-        print "Cell parameters: ", u.get_cell()
-        print "Space group: ", u.get_spacegroup()
-        print "COLUMN: ", u.get_column()
-        print "Resolution range: ", u.get_resolution()
-        print
-        print "header="
-        print "\n".join(u.mtzheader)
+        print("Cell parameters: ", u.get_cell())
+        print("Space group: ", u.get_spacegroup())
+        print("COLUMN: ", u.get_column())
+        print("Resolution range: ", u.get_resolution())
+        print()
+        print("header=")
+        print("\n".join(u.mtzheader))
         
-        for c in reduce(lambda x,y:x+y, u.get_column().values()):
-            print u.get_fullname(c)
+        for c in reduce(lambda x,y:x+y, list(u.get_column().values())):
+            print(u.get_fullname(c))
 
-        print u.datasets
+        print(u.datasets)

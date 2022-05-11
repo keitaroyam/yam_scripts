@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xds_plot_integrate.py
 
@@ -10,6 +10,7 @@ This software is released under the new BSD License; see LICENSE.
 """
 TODO: plot differences in direct beam and rotation axis
 """
+from __future__ import print_function
 
 import sys
 import re
@@ -184,7 +185,7 @@ def make_plot(lp, log_out):
     ofs.write("#image a b c alpha beta gamma rotx roty rotz dist spot spindle orgx orgy$$\n$$\n")
     for images, param in sorted(lp.blockparams.items()):
         for i in images:
-            print >>ofs, "%4d " % i, "  ".join(param.get("cell", ["D"]*6)), " ".join(param.get("rotation", ["D"]*3)), param.get("dist","D"), param.get("spot","D"), param.get("spindle","D"), " ".join(param.get("orig",["D"]*2))
+            print("%4d " % i, "  ".join(param.get("cell", ["D"]*6)), " ".join(param.get("rotation", ["D"]*3)), param.get("dist","D"), param.get("spot","D"), param.get("spindle","D"), " ".join(param.get("orig",["D"]*2)), file=ofs)
 
     ofs.write("$$\n")
     ofs.write("\n\n\n")
@@ -200,7 +201,7 @@ def make_plot(lp, log_out):
     ofs.write("#image %s %s$$\n$$\n" % (" ".join(["sigmab%d"%x for x in range(1,10)]), " ".join(["sigmar%d"%x for x in range(1,10)])))
     for images, param in sorted(lp.blockparams.items()):
         for i in images:
-            print >>ofs, "%4d " % i, " ".join(param["sigmab9"]), " ".join(param["sigmar9"])
+            print("%4d " % i, " ".join(param["sigmab9"]), " ".join(param["sigmar9"]), file=ofs)
 
     ofs.write("$$\n")
     ofs.write("\n\n\n")
@@ -223,6 +224,6 @@ if __name__ == "__main__":
 
     run(int_lp, log_out)
 
-    print
-    print "Run:"
-    print "loggraph", log_out
+    print()
+    print("Run:")
+    print("loggraph", log_out)

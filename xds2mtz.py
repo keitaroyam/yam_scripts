@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xds2mtz.py
 
@@ -20,6 +20,7 @@ When FRIDEL'S_LAW= TRUE,
 With -x option, phenix.xtriage is executed automatically.
 With -t option, ctruncate is used for converting I to F.
 """
+from __future__ import print_function
 
 import sys, os, optparse, subprocess, re
 import mtzutil
@@ -84,7 +85,7 @@ def xds2mtz_normal(refl, mtzout, sg, wavelen, use_ctruncate=False, dmin=None, dm
     #
 
     # for I
-    print "generating MTZ for IMEAN,SIGIMEAN"
+    print("generating MTZ for IMEAN,SIGIMEAN")
 
     ofs = open(os.path.join(wdir, "XDSCONV.INP"), "w")
     ofs.write("OUTPUT_FILE=tmp.hkl CCP4_I\n")
@@ -113,7 +114,7 @@ def xds2mtz_normal(refl, mtzout, sg, wavelen, use_ctruncate=False, dmin=None, dm
          )
 
     # for F
-    print "generating MTZ for FP,SIGFP"
+    print("generating MTZ for FP,SIGFP")
     if use_ctruncate:
         call(cmd="ctruncate -hklin CCP4_I.mtz -hklout ctruncate.mtz -colin '/*/*/[IMEAN,SIGIMEAN]'",
              wdir=wdir,
@@ -167,7 +168,7 @@ end
 
         ##
         # CAD all mtz files
-        print "concatenating MTZ files"
+        print("concatenating MTZ files")
 
         call(cmd="cad",
              arg="hklin1 CCP4_I.mtz hklin2 CCP4_F.mtz hklout CCP4_FI.mtz",
@@ -190,7 +191,7 @@ end
 
     ##
     # Generate all unique reflections
-    print "Genrating all unique reflections"
+    print("Genrating all unique reflections")
     unique(mtzin="CCP4_FI.mtz", mtzout=os.path.basename(mtzout), wdir=wdir)
 
 
@@ -222,7 +223,7 @@ def xds2mtz_anom(refl, mtzout, sg, wavelen, use_ctruncate=False, dmin=None, dmax
     # prepare XDSCONV.INP and run
 
     # for I(+), I(-), SIGI(+), SIGI(-)
-    print "generating MTZ for I(+), I(-), SIGI(+), SIGI(-)"
+    print("generating MTZ for I(+), I(-), SIGI(+), SIGI(-)")
 
     ofs = open(os.path.join(wdir, "XDSCONV.INP"), "w")
     ofs.write("OUTPUT_FILE=tmp.hkl CCP4_I\n")
@@ -253,7 +254,7 @@ def xds2mtz_anom(refl, mtzout, sg, wavelen, use_ctruncate=False, dmin=None, dmax
 
 
     # for F(+), F(-), SIGF(+), SIGF(-)
-    print "generating MTZ for F(+), F(-), SIGF(+), SIGF(-)"
+    print("generating MTZ for F(+), F(-), SIGF(+), SIGF(-)")
     if use_ctruncate:
         call(cmd="ctruncate -hklin CCP4_I.mtz -hklout ctruncate.mtz -colin '/*/*/[IMEAN,SIGIMEAN]' -colano '/*/*/[I(+),SIGI(+),I(-),SIGI(-)]'",
              wdir=wdir,
@@ -308,7 +309,7 @@ end
 
 
         # for DANO, ISYM
-        print "generating MTZ for DANO, ISYM"
+        print("generating MTZ for DANO, ISYM")
 
         ofs = open(os.path.join(wdir, "XDSCONV.INP"), "w")
         ofs.write("OUTPUT_FILE=tmp.hkl CCP4\n")
@@ -336,7 +337,7 @@ end
 
         ##
         # CAD all mtz files
-        print "concatenating MTZ files"
+        print("concatenating MTZ files")
 
         call(cmd="cad",
              arg="hklin1 CCP4_I.mtz hklin2 CCP4_F.mtz hklin3 CCP4.mtz hklout CCP4_FI.mtz",
@@ -362,7 +363,7 @@ end
 
     ##
     # Generate all unique reflections
-    print "Genrating all unique reflections"
+    print("Genrating all unique reflections")
     unique(mtzin="CCP4_FI.mtz", mtzout=os.path.basename(mtzout), wdir=wdir)
 
     # remove files
@@ -412,19 +413,19 @@ def xds2mtz(xds_file, dir_name, hklout=None, run_xtriage=False, run_ctruncate=Fa
     if not os.path.isdir(dir_name):
         os.makedirs(dir_name)
 
-    print "Header information read from", xds_file
+    print("Header information read from", xds_file)
 
     for k in header:
-        print k, "=", header[k]
+        print(k, "=", header[k])
 
-    print
+    print()
 
     ##
     # convert to MTZ
 
     if header["FRIEDEL'S_LAW"] == "TRUE":
-        print xds_file, "is not anomalous dataset."
-        print
+        print(xds_file, "is not anomalous dataset.")
+        print()
         xds2mtz_normal(xds_file,
                        mtzout=os.path.join(dir_name, hklout),
                        sg=header["SPACE_GROUP_NUMBER"],
@@ -432,13 +433,13 @@ def xds2mtz(xds_file, dir_name, hklout=None, run_xtriage=False, run_ctruncate=Fa
                        use_ctruncate=run_ctruncate,
                        dmin=dmin, dmax=dmax)
         if run_xtriage:
-            print "Running xtriage.."
+            print("Running xtriage..")
             call("phenix.xtriage", arg=hklout,
                  stdin=None, stdout=sys.stdout, wdir=dir_name)
 
     else:
-        print xds_file, "is anomalous dataset."
-        print
+        print(xds_file, "is anomalous dataset.")
+        print()
         xds2mtz_anom(xds_file,
                      mtzout=os.path.join(dir_name, hklout),
                      sg=header["SPACE_GROUP_NUMBER"],
@@ -446,7 +447,7 @@ def xds2mtz(xds_file, dir_name, hklout=None, run_xtriage=False, run_ctruncate=Fa
                      use_ctruncate=run_ctruncate,
                      dmin=dmin, dmax=dmax)
         if run_xtriage:
-            print "Running xtriage.."
+            print("Running xtriage..")
             call("phenix.xtriage", arg=hklout + ' input.xray_data.obs_labels="I(+),SIGI(+),I(-),SIGI(-)"',
                  stdin=None, stdout=sys.stdout, wdir=dir_name)
 
@@ -475,7 +476,7 @@ if __name__ == "__main__":
         xds_file = os.path.abspath(args[1])
 
     if not os.path.isfile(xds_file):
-        print "Cannot open", xds_file
+        print("Cannot open", xds_file)
         sys.exit(1)
 
     xds2mtz(xds_file, dir_name=opts.dir,

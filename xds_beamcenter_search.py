@@ -1,4 +1,4 @@
-#!/usr/bin/env phenix.python
+#!/usr/bin/env cctbx.python
 """
 xds_beam_center_search.py
 
@@ -7,6 +7,7 @@ Author: Keitaro Yamashita
 
 This software is released under the new BSD License; see LICENSE.
 """
+from __future__ import print_function
 
 master_params_str = """\
 dx = 2
@@ -39,12 +40,12 @@ def analyze_result(idxreflp):
         if r:
             outof = int(r.group(1)), int(r.group(2))
 
-    print "  Indexed: %d/%d (%.2f%%)" % (outof[0],outof[1], 100.*float(outof[0])/float(outof[1]))
+    print("  Indexed: %d/%d (%.2f%%)" % (outof[0],outof[1], 100.*float(outof[0])/float(outof[1])))
 
 def run(params):
     xdsinp = "XDS.INP"
     kwds = dict(get_xdsinp_keyword(xdsinp))
-    orgx_org, orgy_org = map(float, (kwds["ORGX"], kwds["ORGY"]))
+    orgx_org, orgy_org = list(map(float, (kwds["ORGX"], kwds["ORGY"])))
 
     dx, dy = params.dx, params.dy
     if params.unit == "mm":
@@ -57,12 +58,12 @@ def run(params):
     bk_prefix = make_backup(backup_needed)
     try:
         results = []
-        for i in xrange(-params.nx, params.nx+1):
-            for j in xrange(-params.ny, params.ny+1):
+        for i in range(-params.nx, params.nx+1):
+            for j in range(-params.ny, params.ny+1):
                 work_name = "bs_x%+.2d_y%+.2d" % (i, j)
                 orgx = orgx_org + i * dx
                 orgy = orgy_org + j * dy
-                print "Trying", orgx, orgy
+                print("Trying", orgx, orgy)
 
                 modify_xdsinp(xdsinp, inp_params=[("JOB", "IDXREF"),
                                                   ("ORGX", orgx),
@@ -74,7 +75,7 @@ def run(params):
                 results.append([work_name, orgx, orgy])
 
         for ret in results:
-                print ret,
+                print(ret, end=' ')
                 analyze_result(ret[0]+"_IDXREF.LP")
 
 

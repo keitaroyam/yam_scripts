@@ -1,5 +1,5 @@
 # yam_scripts
-Shell or python (v2.7) scripts for crystallographic works (mostly for XDS)
+Shell or python (v3) scripts for crystallographic works (mostly for XDS)
 
 Most of the scripts require [phenix](http://www.phenix-online.org/) installed (uses phenix.python)
 
