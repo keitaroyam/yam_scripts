@@ -36,7 +36,7 @@ def unique(mtzin, mtzout, wdir):
 
     m = mtzutil.MtzFile(os.path.join(wdir,mtzin))
     cell = m.get_cell_str()
-    sg = m.get_spacegroup()[1]
+    sg = m.get_spacegroup()[1].decode()
     resol = min(m.get_resolution())
 
     call(cmd="unique",

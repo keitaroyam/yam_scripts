@@ -52,8 +52,8 @@ def call(cmd, arg="",
                          shell=True,
                          stdin=subprocess.PIPE,
                          stdout=stdout,
-                         stderr=stdout
-                         )
+                         stderr=stdout,
+                         universal_newlines=True)
 
     if stdin is not None:
         p.stdin.write(stdin)    
